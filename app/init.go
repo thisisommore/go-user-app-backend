@@ -10,14 +10,17 @@ import (
 	"github.com/thisisommore/go-user-app-backend/user/userhandler"
 )
 
-type App struct {
-	Router *mux.Router
-}
+var AppRouter *mux.Router
 
-func Init(app *App) {
-	app.Router = mux.NewRouter()
-	app.Router.HandleFunc("/user", userhandler.AddUser).Methods("POST")
+func Init() {
+	CreateRouter()
 	port := ":" + os.Getenv("PORT")
 	db.Initialize()
-	log.Fatal(http.ListenAndServe(port, app.Router))
+	log.Fatal(http.ListenAndServe(port, AppRouter))
+}
+
+func CreateRouter() *mux.Router {
+	AppRouter = mux.NewRouter()
+	AppRouter.HandleFunc("/user", userhandler.AddUser).Methods("POST")
+	return AppRouter
 }

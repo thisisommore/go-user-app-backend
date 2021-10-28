@@ -1,4 +1,4 @@
-package userhandler
+package tests
 
 import (
 	"bytes"
@@ -8,8 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/thisisommore/go-user-app-backend/app"
 	"github.com/thisisommore/go-user-app-backend/db"
 	"github.com/thisisommore/go-user-app-backend/user"
+	"github.com/thisisommore/go-user-app-backend/user/userhandler"
 	"github.com/thisisommore/go-user-app-backend/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,12 +32,13 @@ func TestAddUser(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	db.Initialize()
-	AddUser(rr, req)
+	router := app.CreateRouter()
+	router.ServeHTTP(rr, req)
 	if rr.Result().StatusCode != 200 {
 		t.FailNow()
 	}
 
-	var res addUserResponse
+	var res userhandler.AddUserResponse
 	json.Unmarshal(rr.Body.Bytes(), &res)
 
 	coll := db.Db.Collection("Users")

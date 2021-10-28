@@ -20,7 +20,7 @@ type addUserRequest struct {
 	//TODO dob,created check type
 }
 
-type addUserResponse struct {
+type AddUserResponse struct {
 	UserId string `json:"userId"`
 }
 
@@ -43,7 +43,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	//TODO: Better error strategy
 	res, err := db.Db.Collection("Users").InsertOne(context.TODO(), newUser)
 	util.HandleError(err)
-	jsonResponse, _ := json.Marshal(addUserResponse{UserId: res.InsertedID.(primitive.ObjectID).Hex()})
+	jsonResponse, _ := json.Marshal(AddUserResponse{UserId: res.InsertedID.(primitive.ObjectID).Hex()})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
