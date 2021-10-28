@@ -13,6 +13,19 @@ type User struct {
 	CreatedAt   string             `bson:"createdAt"`
 }
 
+func AreUsersEqual(a User, b User) bool {
+	if !AreUsersEqualIgnoringIdAndCreateAt(a, b) {
+		return false
+	}
+	if a.ID != b.ID {
+		return false
+	}
+	if a.CreatedAt != b.CreatedAt {
+		return false
+	}
+	return true
+}
+
 func AreUsersEqualIgnoringIdAndCreateAt(a User, b User) bool {
 	if a.Name != b.Name {
 		return false
