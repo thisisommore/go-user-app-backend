@@ -22,5 +22,6 @@ func Init() {
 func CreateRouter() *mux.Router {
 	AppRouter = mux.NewRouter()
 	AppRouter.HandleFunc("/user", userhandler.AddUser).Methods("POST")
+	AppRouter.HandleFunc("/user/{id}", userhandler.GetUser).Methods("GET")
 	return AppRouter
 }
