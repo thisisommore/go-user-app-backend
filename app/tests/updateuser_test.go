@@ -24,14 +24,12 @@ func TestUpdateUser(t *testing.T) {
 	newUser := user.User{
 		ID:          userId,
 		Name:        "Siddhesh",
-		Dob:         "10 july",
+		Dob:         "10-Jul-2003",
 		Address:     "Mangaon",
 		Description: "Great user",
-		CreatedAt:   time.Now().String(),
+		CreatedAt:   time.Now(),
 	}
-
 	_, err := usersCollection.InsertOne(context.TODO(), newUser)
-
 	util.HandleTestError(err, t)
 	t.Cleanup(func() {
 		usersCollection.DeleteOne(context.TODO(), bson.M{"_id": userId})
@@ -54,10 +52,10 @@ func TestUpdateUser(t *testing.T) {
 		updateValue     string
 		updateUperation UpdateOperation
 	}{
-		{name: "Updated name", updateField: "Name", updateValue: "Sahil", updateUperation: Name},
-		{name: "Updated date of birth", updateField: "Dob", updateValue: "20 June", updateUperation: Dob},
-		{name: "Updated address", updateField: "Address", updateValue: "Vinhere Mahad", updateUperation: Address},
-		{name: "Updated description", updateField: "Description", updateValue: "Great boy and topper in class", updateUperation: Description},
+		{name: "Updated name", updateField: "name", updateValue: "Sahil", updateUperation: Name},
+		{name: "Updated date of birth", updateField: "dob", updateValue: "20-Jun-2002", updateUperation: Dob},
+		{name: "Updated address", updateField: "address", updateValue: "Vinhere Mahad", updateUperation: Address},
+		{name: "Updated description", updateField: "description", updateValue: "Great boy and topper in class", updateUperation: Description},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -68,7 +66,7 @@ func TestUpdateUser(t *testing.T) {
 			util.HandleTestError(err, t)
 			router.ServeHTTP(rr, req)
 			if rr.Result().StatusCode != http.StatusOK {
-				t.Fatal(rr.Result().Status)
+				t.Fatal(rr.Result().Status, rr.Body.String())
 			}
 			query := bson.M{"_id": userId}
 			var updatedUser user.User
@@ -88,7 +86,6 @@ func TestUpdateUser(t *testing.T) {
 			case Description:
 				valToCompare = updatedUser.Description
 			}
-
 			if tt.updateValue != valToCompare {
 				t.Fatal(tt.updateField + " is different")
 			}
@@ -96,5 +93,4 @@ func TestUpdateUser(t *testing.T) {
 		})
 	}
 
-	usersCollection.DeleteOne(context.TODO(), bson.M{"_id": userId})
 }

@@ -1,6 +1,9 @@
 package user
 
 import (
+	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -10,19 +13,20 @@ type User struct {
 	Dob         string             `bson:"dob"`
 	Address     string             `bson:"address"`
 	Description string             `bson:"description"`
-	CreatedAt   string             `bson:"createdAt"`
+	CreatedAt   time.Time          `bson:"createdAt"`
 }
 
 func AreUsersEqual(a User, b User) bool {
 	if !AreUsersEqualIgnoringIdAndCreateAt(a, b) {
+		fmt.Println("AreUsersEqualIgnoringIdAndCreateAt")
 		return false
 	}
 	if a.ID != b.ID {
+		fmt.Println("ID")
+
 		return false
 	}
-	if a.CreatedAt != b.CreatedAt {
-		return false
-	}
+
 	return true
 }
 
