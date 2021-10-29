@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/thisisommore/go-user-app-backend/app"
 	"github.com/thisisommore/go-user-app-backend/db"
@@ -23,10 +22,9 @@ func TestGetUser(t *testing.T) {
 	newUser := user.User{
 		ID:          userId,
 		Name:        "Tom",
-		Dob:         "10 july",
+		Dob:         "05-Jun-2006",
 		Address:     "Mangaon",
 		Description: "Great user",
-		CreatedAt:   time.Now().String(),
 	}
 	_, err := usersCollection.InsertOne(context.TODO(), newUser)
 	util.HandleTestError(err, t)

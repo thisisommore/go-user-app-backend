@@ -22,10 +22,10 @@ func TestDeleteUser(t *testing.T) {
 	newUser := user.User{
 		ID:          userId,
 		Name:        "Doremon",
-		Dob:         "10 july",
+		Dob:         "10-July-2005",
 		Address:     "Mangaon",
 		Description: "Great user",
-		CreatedAt:   time.Now().String(),
+		CreatedAt:   time.Now(),
 	}
 	_, err := usersCollection.InsertOne(context.TODO(), newUser)
 	util.HandleTestError(err, t)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,19 +12,19 @@ import (
 	"github.com/thisisommore/go-user-app-backend/app"
 	"github.com/thisisommore/go-user-app-backend/db"
 	"github.com/thisisommore/go-user-app-backend/user"
-	"github.com/thisisommore/go-user-app-backend/user/userhandler"
 	"github.com/thisisommore/go-user-app-backend/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestAddUser(t *testing.T) {
-	newUser := user.User{
+	newUser := user.AddUserRequest{
 		Name:        "Test Om",
-		Dob:         "tuesday",
+		Dob:         "10-Jul-2002",
 		Address:     "Goregaon, Mangaon, Raigad",
 		Description: "I am a hardworking individual",
 	}
+
 	jsonBody, err := json.Marshal(newUser)
 	//TODO
 	util.HandleTestError(err, t)
@@ -34,11 +35,12 @@ func TestAddUser(t *testing.T) {
 	db.Initialize()
 	router := app.CreateRouter()
 	router.ServeHTTP(rr, req)
-	if rr.Result().StatusCode != 200 {
+	if rr.Result().StatusCode != http.StatusOK {
+		fmt.Println(rr.Body.String())
 		t.FailNow()
 	}
 
-	var res userhandler.AddUserResponse
+	var res user.AddUserResponse
 	json.Unmarshal(rr.Body.Bytes(), &res)
 
 	coll := db.Db.Collection("Users")
@@ -47,7 +49,16 @@ func TestAddUser(t *testing.T) {
 	err = coll.FindOne(context.TODO(), bson.M{"_id": obId}).Decode(&addedUser)
 	util.HandleTestError(err, t)
 
-	if !user.AreUsersEqualIgnoringIdAndCreateAt(addedUser, newUser) {
+	const layout = "05-Jan-2006"
+	newExpectedUser := user.User{
+		ID:          obId,
+		Name:        newUser.Name,
+		Dob:         newUser.Dob,
+		Address:     newUser.Address,
+		Description: newUser.Description,
+	}
+
+	if !user.AreUsersEqualIgnoringIdAndCreateAt(addedUser, newExpectedUser) {
 		t.Fatalf("Added user doesn't match new user to be added")
 	}
 
