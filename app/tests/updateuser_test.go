@@ -18,6 +18,7 @@ import (
 )
 
 func TestUpdateUser(t *testing.T) {
+
 	usersCollection := db.Initialize().Collection("Users")
 	userId := primitive.NewObjectID()
 	newUser := user.User{
@@ -28,8 +29,13 @@ func TestUpdateUser(t *testing.T) {
 		Description: "Great user",
 		CreatedAt:   time.Now().String(),
 	}
+
 	_, err := usersCollection.InsertOne(context.TODO(), newUser)
+
 	util.HandleTestError(err, t)
+	t.Cleanup(func() {
+		usersCollection.DeleteOne(context.TODO(), bson.M{"_id": userId})
+	})
 
 	url := "/user/" + userId.Hex()
 
@@ -89,4 +95,6 @@ func TestUpdateUser(t *testing.T) {
 
 		})
 	}
+
+	usersCollection.DeleteOne(context.TODO(), bson.M{"_id": userId})
 }
