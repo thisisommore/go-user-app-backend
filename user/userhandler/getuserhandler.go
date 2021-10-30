@@ -16,6 +16,11 @@ import (
 func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	userId := mux.Vars(r)["id"]
+	if userId == "" {
+		w.Write([]byte("id is required"))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	usersCollection := db.Db.Collection("Users")
 	objectId, err := primitive.ObjectIDFromHex(userId)
 	util.HandleError(err)

@@ -15,6 +15,11 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	usersCollection := db.Db.Collection("Users")
 
 	userId := mux.Vars(r)["id"]
+	if userId == "" {
+		w.Write([]byte("id is required"))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	objectId, err := primitive.ObjectIDFromHex(userId)
 	util.HandleError(err)
 	delOneRes, err := usersCollection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
