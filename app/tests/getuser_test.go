@@ -35,6 +35,9 @@ func TestGetUser(t *testing.T) {
 
 	router := app.CreateRouter()
 	router.ServeHTTP(rr, request)
+	if statusCode := rr.Result().StatusCode; statusCode != http.StatusOK {
+		t.Fatal(statusCode)
+	}
 	var userGot user.User
 	json.Unmarshal(rr.Body.Bytes(), &userGot)
 	if !user.AreUsersEqual(newUser, userGot) {
