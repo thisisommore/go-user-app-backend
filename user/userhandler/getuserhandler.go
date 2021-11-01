@@ -17,12 +17,17 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	userId := mux.Vars(r)["id"]
 	if userId == "" {
-		w.Write([]byte("id is required"))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("id is required"))
+		return
+	}
+	objectId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Id is not valid"))
 		return
 	}
 	usersCollection := db.Db.Collection("Users")
-	objectId, err := primitive.ObjectIDFromHex(userId)
 	util.HandleError(err)
 
 	filterQuery := bson.M{"_id": objectId}

@@ -24,6 +24,12 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	objectId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Id is not valid"))
+		return
+	}
 	validate := validator.New()
 
 	var body user.UpdateUserRequest
@@ -66,7 +72,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	updateFilter := bson.M{"$set": bsonMBody}
-	objectId, _ := primitive.ObjectIDFromHex(userId)
 	updateRes, err := usersCollection.UpdateByID(context.TODO(), objectId, updateFilter)
 	util.HandleError(err)
 	if updateRes.ModifiedCount == 1 {

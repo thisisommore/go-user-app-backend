@@ -21,7 +21,11 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	objectId, err := primitive.ObjectIDFromHex(userId)
-	util.HandleError(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Id is not valid"))
+		return
+	}
 	delOneRes, err := usersCollection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
 	util.HandleError(err)
 	if delOneRes.DeletedCount == 1 {
